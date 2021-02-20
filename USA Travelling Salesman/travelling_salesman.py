@@ -15,12 +15,15 @@ def get_cities():
     for state in capitals_json:
         if state not in ['AK', 'HI']:
             capital = capitals_json[state]['capital']
+
             capital_cities.append(capital)
             capital_coordinates[capital] = (float(capitals_json[state]['lat']), float(capitals_json[state]['long']))
 
-    capital_cities = capital_cities[0:44]
-
     return capital_cities, capital_coordinates
+
+
+capitals, coordinates = get_cities()
+cities = len(capitals)
 
 
 def haversine(start_latitude, start_longitude, finish_latitude, finish_longitude):
@@ -29,10 +32,8 @@ def haversine(start_latitude, start_longitude, finish_latitude, finish_longitude
     delta_latitude = (finish_latitude - start_latitude) * degree_to_radiant
     delta_longitude = (finish_longitude - start_longitude) * degree_to_radiant
 
-    a = pow(math.sin(delta_latitude / 2), 2) + math.cos(start_latitude * degree_to_radiant) * math.cos(finish_latitude * degree_to_radiant) * pow(math.sin(delta_longitude / 2), 2)
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-    return 3956 * c
+    factor = pow(math.sin(delta_latitude / 2), 2) + math.cos(start_latitude * degree_to_radiant) * math.cos(finish_latitude * degree_to_radiant) * pow(math.sin(delta_longitude / 2), 2)
+    return 7912 * math.atan2(math.sqrt(factor), math.sqrt(1 - factor))
 
 
 def get_distance(start, finish):
@@ -53,8 +54,6 @@ def get_maximum_distance():
     return maximum
 
 
-capitals, coordinates = get_cities()
-cities = len(capitals)
 maximum_distance = get_maximum_distance()
 
 
@@ -118,15 +117,14 @@ def plot_map(solution):
     points.append(points[0])
 
     folium.PolyLine(points).add_to(travel_map)
-
     travel_map.save('map.html')
 
 
 def genetic_algorithm(generations, population, mutation, elit, studEA):
     model = ga.geneticalgorithm2(function=objective_function,
-                                 dimension=len(capitals),
+                                 dimension=cities,
                                  variable_type='int',
-                                 variable_boundaries=np.array([[0, len(capitals) - 1]] * len(capitals)),
+                                 variable_boundaries=np.array([[0, cities - 1]] * cities),
                                  algorithm_parameters={'max_num_iteration': generations,
                                                        'population_size': population,
                                                        'mutation_probability': mutation,
@@ -147,13 +145,3 @@ if __name__ == '__main__':
                       mutation=0.1,
                       elit=0.01,
                       studEA=True)
-
-    # genetic_algorithm(generations=3000,
-    #                   population=100,
-    #                   elit=0.1,
-    #                   studEA=False)
-    #
-    # genetic_algorithm(generations=3000,
-    #                   population=100,
-    #                   elit=0.1,
-    #                   studEA=True)
