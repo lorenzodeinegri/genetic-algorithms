@@ -92,14 +92,17 @@ def print_algorithm_solution(solution, score):
     print('Miles: {}'.format(score))
 
 
-def genetic_algorithm():
+def genetic_algorithm(generations, population, elit, studEA):
     model = ga.geneticalgorithm2(function=objective_function,
                                  dimension=get_cities(),
                                  variable_type='int',
                                  variable_boundaries=np.array([[0, 12]] * get_cities()),
-                                 algorithm_parameters={'max_num_iteration': 10000})
+                                 algorithm_parameters={'max_num_iteration': generations,
+                                                       'population_size': population,
+                                                       'elit_ratio': elit})
 
-    model.run(no_plot=True)
+    model.run(no_plot=True,
+              studEA=studEA)
 
     plot_algorithm_progress(np.array(model.report))
     plot_algorithm_generation(model.output_dict['last_generation']['scores'])
@@ -107,4 +110,17 @@ def genetic_algorithm():
 
 
 if __name__ == '__main__':
-    genetic_algorithm()
+    genetic_algorithm(generations=3000,
+                      population=100,
+                      elit=0.0,
+                      studEA=False)
+
+    genetic_algorithm(generations=3000,
+                      population=100,
+                      elit=0.1,
+                      studEA=False)
+
+    genetic_algorithm(generations=3000,
+                      population=100,
+                      elit=0.1,
+                      studEA=True)
