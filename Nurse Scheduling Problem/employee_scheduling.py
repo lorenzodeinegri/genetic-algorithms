@@ -1,6 +1,7 @@
 import geneticalgorithm2 as ga
 import numpy as np
 from matplotlib import pyplot as plt
+import pandas as pd
 
 
 def get_employees():
@@ -16,10 +17,18 @@ def get_shifts():
 
 
 def get_shift_requests():
-    return [[[0, 0, 1], [1, 0, 0], [0, 0, 1]],
-            [[1, 0, 0], [0, 0, 0], [0, 1, 0]],
-            [[0, 1, 0], [0, 1, 0], [0, 0, 0]],
-            [[0, 0, 1], [0, 0, 1], [1, 0, 0]]]
+    return [[[0, 0, 0], [0, 0, 0], [0, 1, 0]],
+            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+            [[0, 1, 0], [1, 0, 0], [0, 1, 0]],
+            [[0, 0, 0], [0, 1, 0], [1, 0, 0]]]
+
+
+# def get_shift_requests():
+#     return [[[0, 0, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 0, 1]],
+#             [[0, 0, 0], [0, 0, 0], [0, 1, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0], [0, 0, 1]],
+#             [[0, 1, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 0], [0, 1, 0], [0, 0, 0]],
+#             [[0, 0, 1], [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 0]],
+#             [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]]]
 
 
 def check_shift_to_single_employee_per_day(x):
@@ -136,12 +145,8 @@ def plot_algorithm_generation(data):
 
 
 def print_algorithm_solution(solution):
-    for i in range(get_employees()):
-        print('\nEmployee {}:'.format(i))
-        for j in range(get_days()):
-            print('\tDay {}:'.format(j))
-            for k in range(get_shifts()):
-                print('\t\tShift {}: {}'.format(k, 'Work' if solution[k + j * get_shifts() + i * get_shifts() * get_days()] else 'Home'))
+    print(pd.DataFrame.from_records(solution.reshape(get_employees(), get_days() * get_shifts()).astype(int),
+                                    columns=[str(i + 1) for i in range(get_shifts())] * get_days()))
 
 
 def genetic_algorithm(generations, population, elit, studEA):
@@ -161,7 +166,7 @@ def genetic_algorithm(generations, population, elit, studEA):
 
 
 if __name__ == '__main__':
-    genetic_algorithm(generations=3000,
+    genetic_algorithm(generations=1000,
                       population=100,
                       elit=0.01,
-                      studEA=False)
+                      studEA=True)
