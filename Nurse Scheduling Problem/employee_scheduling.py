@@ -172,7 +172,7 @@ def genetic_algorithm(generations, population, elit, studEA):
 
 
 if __name__ == '__main__':
-    genetic_algorithm(generations=3000,
+    genetic_algorithm(generations=9000,
                       population=100,
                       elit=0.01,
-                      studEA=False)
+                      studEA=True)
