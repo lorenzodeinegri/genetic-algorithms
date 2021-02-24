@@ -19,6 +19,8 @@ def get_cities():
             capital_cities.append(capital)
             capital_coordinates[capital] = (float(capitals_json[state]['lat']), float(capitals_json[state]['long']))
 
+    capital_cities = capital_cities[:10]
+
     return capital_cities, capital_coordinates
 
 
@@ -112,22 +114,27 @@ def plot_map(solution):
     travel_map = folium.Map(location=[40, -95], zoom_start=5)
 
     points = []
-    for i in solution:
-        points.append(coordinates[capitals[int(i)]])
+    for i, s in enumerate(solution, 1):
+        points.append(coordinates[capitals[int(s)]])
+        folium.Marker(location=coordinates[capitals[int(s)]],
+                      popup=folium.Popup(html=str(i) + '-' + capitals[int(s)],
+                                         show=True),
+                      icon=folium.Icon(color='red' if i == 1 else 'blue',
+                                       icon='info-sign')).add_to(travel_map)
+
     points.append(points[0])
 
     folium.PolyLine(points).add_to(travel_map)
     travel_map.save('map.html')
 
 
-def genetic_algorithm(generations, population, mutation, elit, studEA):
+def genetic_algorithm(generations, population, elit, studEA):
     model = ga.geneticalgorithm2(function=objective_function,
                                  dimension=cities,
                                  variable_type='int',
                                  variable_boundaries=np.array([[0, cities - 1]] * cities),
                                  algorithm_parameters={'max_num_iteration': generations,
                                                        'population_size': population,
-                                                       'mutation_probability': mutation,
                                                        'elit_ratio': elit})
 
     model.run(no_plot=True,
@@ -140,8 +147,7 @@ def genetic_algorithm(generations, population, mutation, elit, studEA):
 
 
 if __name__ == '__main__':
-    genetic_algorithm(generations=10000,
-                      population=500,
-                      mutation=0.1,
+    genetic_algorithm(generations=9000,
+                      population=100,
                       elit=0.01,
                       studEA=True)
