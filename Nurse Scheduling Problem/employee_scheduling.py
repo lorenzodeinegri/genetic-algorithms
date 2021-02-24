@@ -17,18 +17,23 @@ def get_shifts():
 
 
 def get_shift_requests():
-    return [[[0, 0, 0], [0, 0, 0], [0, 1, 0]],
-            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-            [[0, 1, 0], [1, 0, 0], [0, 1, 0]],
-            [[0, 0, 0], [0, 1, 0], [1, 0, 0]]]
+    return [[[0, 0, 0], [0, 0, 0], [0, 0, 1]],
+            [[0, 1, 0], [0, 1, 0], [1, 0, 0]],
+            [[0, 0, 0], [1, 0, 0], [0, 0, 0]],
+            [[1, 0, 0], [0, 1, 0], [0, 0, 0]]]
 
+
+# def get_shift_requests():
+#     return [[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 1], [0, 1, 0]],
+#             [[0, 0, 0], [0, 1, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0]],
+#             [[0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 0], [0, 1, 0]],
+#             [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0]]]
 
 # def get_shift_requests():
 #     return [[[0, 0, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 0, 1]],
 #             [[0, 0, 0], [0, 0, 0], [0, 1, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0], [0, 0, 1]],
 #             [[0, 1, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 0], [0, 1, 0], [0, 0, 0]],
-#             [[0, 0, 1], [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 0]],
-#             [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]]]
+#             [[0, 0, 1], [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 0]]]
 
 
 def check_shift_to_single_employee_per_day(x):
@@ -95,8 +100,9 @@ def check_met_requests(x):
     requests_met = 0
     for i in range(get_employees()):
         for j in range(get_days()):
-            if requests[i][j] == shifts[i][j]:
-                requests_met += 1
+            for k in range(get_shifts()):
+                if requests[i][j][k] == 1 and requests[i][j][k] == shifts[i][j][k]:
+                    requests_met += 1
 
     return requests_met
 
@@ -104,7 +110,7 @@ def check_met_requests(x):
 def objective_function(x):
     x = x.astype(int)
 
-    cost = get_days() * get_employees() - check_met_requests(x)
+    cost = sum(np.array(get_shift_requests()).flatten()) - check_met_requests(x)
 
     if not check_shift_to_single_employee_per_day(x):
         cost += 10000
@@ -166,7 +172,7 @@ def genetic_algorithm(generations, population, elit, studEA):
 
 
 if __name__ == '__main__':
-    genetic_algorithm(generations=1000,
+    genetic_algorithm(generations=3000,
                       population=100,
                       elit=0.01,
-                      studEA=True)
+                      studEA=False)
