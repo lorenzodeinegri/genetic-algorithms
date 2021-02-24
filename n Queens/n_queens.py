@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def get_queens():
-    return 10
+    return 8
 
 
 def check_vertical_conflicts(x):
@@ -17,7 +17,7 @@ def check_vertical_conflicts(x):
         for j in np.linspace(i, i + get_queens() * (get_queens() - 1), get_queens()):
             conflicts += x[int(j)]
 
-        total_conflicts.append(conflicts - 1)
+        total_conflicts.append(conflicts)
 
     return total_conflicts
 
@@ -31,7 +31,7 @@ def check_horizontal_conflicts(x):
         for j in range(i * get_queens(), get_queens() + i * get_queens()):
             conflicts += x[j]
 
-        total_conflicts.append(conflicts - 1)
+        total_conflicts.append(conflicts)
 
     return total_conflicts
 
@@ -46,7 +46,7 @@ def check_major_diagonal_conflicts(x):
         for j in range(get_queens() - i):
             conflicts += x[i + j][j]
 
-        total_conflicts.append(conflicts - 1)
+        total_conflicts.append(conflicts)
 
     for j in range(1, get_queens()):
         conflicts = 0
@@ -54,7 +54,7 @@ def check_major_diagonal_conflicts(x):
         for i in range(get_queens() - j):
             conflicts += x[i][j + i]
 
-        total_conflicts.append(conflicts - 1)
+        total_conflicts.append(conflicts)
 
     return total_conflicts
 
@@ -69,7 +69,7 @@ def check_minor_diagonal_conflicts(x):
         for i in range(j + 1):
             conflicts += x[i][j - i]
 
-        total_conflicts.append(conflicts - 1)
+        total_conflicts.append(conflicts)
 
     for i in range(1, get_queens()):
         conflicts = 0
@@ -77,7 +77,7 @@ def check_minor_diagonal_conflicts(x):
         for j in range(get_queens() - 1, i - 1, -1):
             conflicts += x[get_queens() - 1 + i - j][j]
 
-        total_conflicts.append(conflicts - 1)
+        total_conflicts.append(conflicts)
 
     return total_conflicts
 
@@ -90,22 +90,22 @@ def objective_function(x):
     vertical = check_vertical_conflicts(x)
     for i in vertical:
         if i > 0:
-            cost += i
+            cost += i * (i - 1)
 
     horizontal = check_horizontal_conflicts(x)
     for i in horizontal:
         if i > 0:
-            cost += i
+            cost += i * (i - 1)
 
     major_diagonal = check_major_diagonal_conflicts(x)
     for i in major_diagonal:
         if i > 0:
-            cost += i
+            cost += i * (i - 1)
 
     minor_diagonal = check_minor_diagonal_conflicts(x)
     for i in minor_diagonal:
         if i > 0:
-            cost += i
+            cost += i * (i - 1)
 
     if sum(x) != get_queens():
         cost += get_queens() ** 2
@@ -170,7 +170,7 @@ def genetic_algorithm(generations, population, elit, studEA):
 
 
 if __name__ == '__main__':
-    genetic_algorithm(generations=3000,
+    genetic_algorithm(generations=1000,
                       population=100,
-                      elit=0.01,
+                      elit=0.0,
                       studEA=False)
