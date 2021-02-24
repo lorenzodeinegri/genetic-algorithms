@@ -90,22 +90,22 @@ def objective_function(x):
     vertical = check_vertical_conflicts(x)
     for i in vertical:
         if i > 0:
-            cost += i * (i - 1)
+            cost += i - 1
 
     horizontal = check_horizontal_conflicts(x)
     for i in horizontal:
         if i > 0:
-            cost += i * (i - 1)
+            cost += i - 1
 
     major_diagonal = check_major_diagonal_conflicts(x)
     for i in major_diagonal:
         if i > 0:
-            cost += i * (i - 1)
+            cost += i - 1
 
     minor_diagonal = check_minor_diagonal_conflicts(x)
     for i in minor_diagonal:
         if i > 0:
-            cost += i * (i - 1)
+            cost += i - 1
 
     if sum(x) != get_queens():
         cost += get_queens() ** 2
@@ -162,7 +162,8 @@ def genetic_algorithm(generations, population, elit, studEA):
                                                        'elit_ratio': elit})
 
     model.run(no_plot=True,
-              studEA=studEA)
+              studEA=studEA,
+              seed=None)
 
     plot_algorithm_progress(np.array(model.report))
     plot_algorithm_generation(model.output_dict['last_generation']['scores'])
@@ -170,7 +171,7 @@ def genetic_algorithm(generations, population, elit, studEA):
 
 
 if __name__ == '__main__':
-    genetic_algorithm(generations=1000,
+    genetic_algorithm(generations=9000,
                       population=100,
-                      elit=0.0,
-                      studEA=False)
+                      elit=0.01,
+                      studEA=True)
