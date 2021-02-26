@@ -58,37 +58,44 @@ def get_shifts_number():
 
 
 def check_shift_availabilities(x):
+    x = x.reshape((get_employees_number(), get_shifts_number()))
     conflicts = 0
 
     for i in range(get_employees_number()):
         for j in range(get_shifts_number()):
-            if x[j + i * get_shifts_number()] == 1 and j not in get_employees_shift_availabilities()[get_employee(i)]:
+            if x[i][j] == 1 and j not in get_employees_shift_availabilities()[get_employee(i)]:
                 conflicts += 1
 
     return conflicts
 
 
 def check_shift_requirements(x):
+    x = x.reshape((get_employees_number(), get_shifts_number()))
     slack = []
 
-    for i in range(get_shifts_number()):
-        shifts = sum([x[int(j)] for j in np.linspace(i, i + get_shifts_number() * (get_employees_number() - 1), get_employees_number())])
-        requirements = get_shift(i)
+    for j in range(get_shifts_number()):
+        shifts = 0
 
+        for i in range(get_employees_number()):
+            shifts += x[i][j]
+
+        requirements = get_shift(j)
         slack.append(requirements - shifts if requirements - shifts > 0 else 0)
 
     return slack
 
 
 def check_maximum_minimum_shifts(x):
+    x = x.reshape((get_employees_number(), get_shifts_number()))
+
     maximum = 0
     minimum = get_shifts_number()
 
     for i in range(get_employees_number()):
         total = 0
 
-        for j in range(i * get_shifts_number(), get_shifts_number() + i * get_shifts_number()):
-            total += x[j]
+        for j in range(get_shifts_number()):
+            total += x[i][j]
 
         if total > maximum:
             maximum = total
@@ -145,6 +152,7 @@ def plot_algorithm_generation(data):
 
 
 def print_algorithm_solution(solution):
+    solution = solution.reshape((get_employees_number(), get_shifts_number()))
     employees = list(get_employees().keys())
     
     print()
@@ -155,9 +163,9 @@ def print_algorithm_solution(solution):
         total_employee_shifts = 0
         result = [employees[i]]
 
-        for j in range(i * get_shifts_number(), i * get_shifts_number() + get_shifts_number()):
-            total_employee_shifts += solution[j]
-            result.append('*' if solution[j] == 1 else '-')
+        for j in range(get_shifts_number()):
+            total_employee_shifts += solution[i][j]
+            result.append('*' if solution[i][j] == 1 else '-')
 
         employees_shifts.append(total_employee_shifts)
         results.append(result)
@@ -165,7 +173,6 @@ def print_algorithm_solution(solution):
         print('{}: {}'.format(employees[i], int(total_employee_shifts)))
 
     print('\nSlack: {}\n'.format(sum(check_shift_requirements(solution))))
-
     print(pd.DataFrame.from_records(results, columns=['worker'] + [str(i) for i in range(get_shifts_number())]))
 
 
@@ -189,4 +196,4 @@ if __name__ == '__main__':
     genetic_algorithm(generations=1000,
                       population=100,
                       elit=0.01,
-                      studEA=False)
+                      studEA=True)
